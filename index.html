@@ -407,6 +407,18 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.bo
 #qt .qbig{font-size:clamp(60px,12vw,140px);font-weight:800;line-height:1;color:var(--qa)}
 #qt .qmsg{font-size:clamp(22px,3.4vw,40px);font-weight:700}
 #qt input.qn{font:inherit;font-weight:700;width:3.4em;text-align:center;border:3px solid var(--qa);border-radius:14px;padding:6px;background:transparent;color:inherit;font-size:clamp(17px,2.2vw,24px)}
+#qt .qtl{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:min(100%,900px)}
+#qt .qtile{font:inherit;border:3px solid var(--qa);background:var(--panel,var(--card,#fff));color:var(--qa);border-radius:18px;padding:16px 10px;cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:center}
+#qt .qtile .ic{font-size:clamp(28px,4vw,44px);line-height:1}#qt .qtile b{font-size:clamp(24px,3.6vw,38px)}#qt .qtile small{font-size:clamp(13px,1.7vw,18px);color:var(--muted,var(--mut,#555))}
+#qt .qtile:hover{background:var(--qa);color:#fff}#qt .qtile:hover small{color:#fff}
+#qt .qset{gap:12px}#qt .qgrid{display:grid;gap:8px;width:min(100%,900px);border-top:2px solid color-mix(in srgb,var(--qa) 25%,transparent);padding-top:10px}
+#qt .qrw{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;font-size:clamp(14px,1.8vw,19px)}
+#qt .qlb{min-width:5.2em;text-align:right;color:var(--muted,var(--mut,#555))}
+#qt .qchip{border:2px solid var(--qa);border-radius:10px;padding:1px 10px;color:var(--qa);font-size:clamp(14px,1.8vw,19px)}
+#qt .qfoot{margin-top:6px;gap:14px}
+#qt .qopts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:min(100%,900px)}@media(max-width:480px){#qt .qopts{grid-template-columns:1fr}}
+#qt .qo{font-size:clamp(20px,3vw,32px)!important;padding:14px 10px!important}
+@media(max-width:600px){#qt .qtl{grid-template-columns:1fr}#qt .qlb{text-align:center;min-width:100%}}
 #qt .qk{width:100%;max-width:900px;text-align:left;font-size:clamp(15px,1.8vw,20px);border:2px dashed var(--qa);border-radius:12px;padding:8px 12px;display:grid;gap:4px}
 #qt .qk div{overflow:hidden;max-height:3.2em}
 #qt .qstat{font-size:clamp(17px,2.2vw,24px);color:var(--muted,var(--mut,#555))}
@@ -415,7 +427,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.bo
 @media(max-width:600px){#qt .qc{min-height:240px}}
 </style><script>(function(){
 window.__QTCFG=function(){var d=D[cur];var mk=function(x){return{f:'<div class="em">'+x[0]+'</div>',b:'<div class="wd">'+x[1]+'</div><div class="df">'+x[2]+'</div>'}};return{curKey:cur,chapters:function(){return ORDER.map(function(c){return{k:c,s:'G&M '+c,l:D[c].t,p:function(){return D[c].cards.map(mk)}}})},cls:'card',label:(d.t||cur),accent:getComputedStyle(document.querySelector('.sbar')||document.body).getPropertyValue('--dc')||'#2a7a3b',chapter:function(){return d.cards.map(mk)},all:function(){var o=[];ORDER.forEach(function(c){o=o.concat(D[c].cards.map(mk))});return o}}};var CFG=window.__QTCFG;
-var st={ph:'setup',mode:'q',n:10,min:2,inf:false,timed:false,end:0,tm:null,sel:{},pool:[],seq:[],i:0,flip:false,res:[],used:{}};
+var st={ph:'setup',mode:'q',n:10,min:2,k:4,mc:false,opts:[],lock:false,chOpen:false,inf:false,timed:false,end:0,tm:null,sel:{},pool:[],seq:[],i:0,flip:false,res:[],used:{}};
 function txt(h,first){var d=document.createElement('div');d.innerHTML=h;if(first&&d.firstElementChild&&d.children.length>1){var t0=(d.firstElementChild.textContent||'').trim();if(t0)return t0.replace(/\s+/g,' ')}d.querySelectorAll('svg,script,style').forEach(function(n){n.remove()});return (d.textContent||'').replace(/\s+/g,' ').trim()}
 function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
 function getPool(){var c=CFG();var raw=[];c.chapters().forEach(function(x){if(st.sel[x.k])raw=raw.concat(x.p())});var seen={},out=[];raw.forEach(function(x){var k=x.f+'§'+x.b;if(!seen[k]){seen[k]=1;out.push(x)}});return out}
@@ -424,28 +436,45 @@ function open(){var c=CFG();var o=document.createElement('div');o.id='qt';o.setA
 function close(){stopT();var o=root();if(o)o.remove()}
 function stopT(){if(st.tm){clearInterval(st.tm);st.tm=null}}
 function finish(){stopT();st.seq=st.seq.slice(0,st.res.length);st.ph='end';draw()}
-function start(list,inf,timed){stopT();st.seq=list;st.inf=!!inf;st.timed=!!timed;st.i=0;st.flip=false;st.res=[];st.ph='run';if(st.timed){st.end=Date.now()+st.min*60000;st.tm=setInterval(tick,250)}draw()}
+function start(list,inf,timed,mc){stopT();st.mc=!!mc;st.opts=[];st.lock=false;st.seq=list;st.inf=!!inf;st.timed=!!timed;st.i=0;st.flip=false;st.res=[];st.ph='run';if(st.timed){st.end=Date.now()+st.min*60000;st.tm=setInterval(tick,250)}draw()}
 function fmt(ms){var s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+':'+('0'+s%60).slice(-2)}
 function tick(){if(!root()||st.ph!='run'){stopT();return}var r=st.end-Date.now();if(r<=0){finish();return}var e=document.getElementById('qtt');if(e){e.textContent=fmt(r);e.style.color=r<10000?'#c62828':''}}
-function go0(){var l=pick();mark(l);start(l,st.mode=='speed'||!st.n,st.mode=='speed')}
+function go0(){var l=pick();mark(l);start(l,st.mode=='speed'||!st.n,st.mode=='speed',st.mode=='speed')}
+var INF='<svg viewBox="0 0 24 24" width="1.25em" height="1.25em" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.2em"><path d="M12 12c-2-2.7-3.6-4.5-5.5-4.5a4.5 4.5 0 000 9c1.9 0 3.5-1.8 5.5-4.5zm0 0c2 2.7 3.6 4.5 5.5 4.5a4.5 4.5 0 000-9c-1.9 0-3.5 1.8-5.5 4.5z"/></svg>';
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function ansOf(x){var d=document.createElement('div');d.innerHTML=x.b;var e=d.querySelector('.ans,.wd');d.querySelectorAll('svg,script,style').forEach(function(n){n.remove()});var t=e?(e.textContent||''):txt(x.b,1);return t.replace(/\s+/g,' ').trim()}
+function okT(t){return t&&t.length>0&&t.length<=48}
+function mcOpts(x){var c=CFG(),good=ansOf(x);if(!okT(good))return null;var seen={};seen[good]=1;var out=[];
+ function add(list){shuf(list).forEach(function(y){if(out.length>=st.k-1)return;var t=ansOf(y);if(okT(t)&&!seen[t]){seen[t]=1;out.push(t)}})}
+ add(getPool());if(out.length<st.k-1&&c.all)add(c.all());if(!out.length)return null;
+ var o=out.map(function(t){return{t:t,ok:false}});o.push({t:good,ok:true});return shuf(o)}
+function rgBtns(){return [].slice.call(document.querySelectorAll('.rgb button[data-rg]'))}
+var RGL={10:'<10',20:'<20',59:'<59',100:'<100',0:INF};
+function relabel(){document.querySelectorAll('[data-t=ca],[data-go=ca],#mCartes,#vCa,#vC').forEach(function(e){var w=document.createTreeWalker(e,NodeFilter.SHOW_TEXT),n;while(n=w.nextNode()){var v=n.nodeValue;if(/Cartes|🃏/.test(v)){n.nodeValue=v.replace('🃏','🎯').replace('Cartes','Test')}}});
+ rgBtns().forEach(function(b){if(b.getAttribute('data-lb'))return;var v=b.getAttribute('data-rg');if(RGL[v]!==undefined){b.setAttribute('data-lb','1');b.innerHTML=RGL[v]}})}
+try{relabel();new MutationObserver(relabel).observe(document.body,{childList:true,subtree:true,characterData:true})}catch(_){}
+document.addEventListener('click',function(e){var n=e.target.closest&&e.target.closest('[data-t=ca],[data-go=ca],#mCartes,#vCa,#vC');if(n&&!root())setTimeout(function(){if(!root())open()},60)},true);
 function cnt(p){return (st.mode=='speed'||!st.n)?p.length:Math.min(st.n,p.length)}
 function pick(){var p=st.pool=getPool();return shuf(p).slice(0,cnt(p))}
 function pickOther(){var p=st.pool=getPool();var n=cnt(p);var u=st.used;var fresh=p.filter(function(x){return !u[x.f+'§'+x.b]});var s=shuf(fresh).slice(0,n);if(s.length<n){var rest=shuf(p.filter(function(x){return s.indexOf(x)<0})).slice(0,n-s.length);s=s.concat(rest)}return shuf(s)}
 function mark(list){list.forEach(function(x){st.used[x.f+'§'+x.b]=1})}
 function cardHTML(x,back){var c=CFG();var inner=back?x.b:x.f;if(c.wrap)inner=c.wrap(inner);return '<div class="qc '+c.cls+(back?' bk back flip':'')+'" data-qt="flip" tabindex="0" role="button" aria-label="Retourner la carte">'+inner+'</div>'}
 function draw(){var o=root();if(!o)return;var c=CFG();var h='<div class="qh"><b>🎯 Test · '+(c.label||'')+'</b><button class="qb" data-qt="close">✕ Fermer</button></div>';
- if(st.ph=='setup'){var np=getPool().length;
-  h+='<div class="qs"><div class="qr"><button class="qb" data-qt="mode" data-v="q" aria-pressed="'+(st.mode=='q')+'">📋 Nombre de questions</button><button class="qb" data-qt="mode" data-v="speed" aria-pressed="'+(st.mode=='speed')+'">⏱ Rapidité</button></div>';
-  if(st.mode=='q')h+='<div class="qmsg">Combien de questions ?</div><div class="qr">'+[5,10,15].map(function(n){return '<button class="qb" data-qt="n" data-v="'+n+'" aria-pressed="'+(st.n==n)+'">'+n+'</button>'}).join('')+'<span class="qr" style="gap:6px"><button class="qb" data-qt="qm" aria-label="Moins">-</button><input class="qn" id="qtn" type="number" min="1" max="200" inputmode="numeric" value="'+(st.n||'')+'" placeholder="..." aria-label="Nombre de questions"><button class="qb" data-qt="qp" aria-label="Plus">+</button></span><button class="qb" data-qt="n" data-v="0" aria-pressed="'+(st.n==0)+'">Infini</button></div>';
-  else h+='<div class="qmsg">Le plus de questions possible en…</div><div class="qr"><button class="qb" data-qt="mm" aria-label="Moins une minute">-</button><input class="qn" id="qtm" type="number" min="1" max="60" inputmode="numeric" value="'+st.min+'" aria-label="Minutes"><button class="qb" data-qt="mp" aria-label="Plus une minute">+</button><span>minute'+(st.min>1?'s':'')+'</span></div>';
-  h+='<div class="qmsg" style="font-size:clamp(18px,2.6vw,28px)">Quels chapitres ?</div><div class="qr qch">'+c.chapters().map(function(x){return '<button class="qb qs1" data-qt="ch" data-v="'+x.k+'" title="'+(x.l||'')+'" aria-pressed="'+(!!st.sel[x.k])+'">'+x.s+'</button>'}).join('')+'</div><div class="qr"><button class="qb qs1" data-qt="chall">Tout cocher</button><button class="qb qs1" data-qt="chnone">Tout décocher</button><button class="qb qs1" data-qt="chcur">Chapitre en cours</button></div>';
-  h+='<div class="qstat">'+np+' carte'+(np>1?'s':'')+' disponible'+(np>1?'s':'')+(st.mode=='speed'||!st.n?' · les cartes tournent en boucle':(np<st.n?' : le test aura '+np+' question'+(np>1?'s':''):''))+'</div>';
-  h+=np?'<button class="qb pri" data-qt="go" style="font-size:clamp(22px,3vw,32px);padding:12px 30px">Commencer</button>':'<div class="qstat">Aucune carte : coche au moins un chapitre (ou change la limite des nombres).</div>';
-  h+='</div>'}
- else if(st.ph=='run'){var x=st.seq[st.i],ok=st.res.filter(function(r){return r}).length,ko=st.res.length-ok;
+ if(st.ph=='setup'){var np=getPool().length,chs=c.chapters(),nsel=chs.filter(function(x){return st.sel[x.k]});
+  var one=nsel.length==1?nsel[0].s:nsel.length+' chapitres';
+  h+='<div class="qs qset"><div class="qtl"><button class="qtile" data-qt="tile" data-v="q"><span class="ic">🎯</span><b>Test</b><small>'+(st.n?st.n+' question'+(st.n>1?'s':''):'questions sans fin')+' · '+one+'</small></button><button class="qtile" data-qt="tile" data-v="speed"><span class="ic">⏱</span><b>Rapidité</b><small>le plus possible en '+st.min+' min · '+one+'</small></button></div>';
+  h+='<div class="qstat">'+(np?np+' carte'+(np>1?'s':'')+' disponible'+(np>1?'s':''):'Aucune carte : choisis au moins un chapitre (ou élargis les nombres).')+'</div><div class="qgrid">';
+  h+='<div class="qrw"><span class="qlb">Questions</span>'+[5,10].map(function(n){return '<button class="qb qs1" data-qt="n" data-v="'+n+'" aria-pressed="'+(st.n==n)+'">'+n+'</button>'}).join('')+'<button class="qb qs1" data-qt="qm" aria-label="Moins">-</button><input class="qn" id="qtn" type="number" min="1" max="200" inputmode="numeric" value="'+(st.n||'')+'" aria-label="Nombre de questions"><button class="qb qs1" data-qt="qp" aria-label="Plus">+</button><button class="qb qs1" data-qt="n" data-v="0" aria-pressed="'+(st.n==0)+'" aria-label="Infini">'+INF+'</button></div>';
+  h+='<div class="qrw"><span class="qlb">Minutes</span><button class="qb qs1" data-qt="mm" aria-label="Moins une minute">-</button><input class="qn" id="qtm" type="number" min="1" max="60" inputmode="numeric" value="'+st.min+'" aria-label="Minutes"><button class="qb qs1" data-qt="mp" aria-label="Plus une minute">+</button><span class="qlb" style="margin-left:10px">Choix</span>'+[2,3,4].map(function(k){return '<button class="qb qs1" data-qt="k" data-v="'+k+'" aria-pressed="'+(st.k==k)+'">'+k+'</button>'}).join('')+'</div>';
+  h+='<div class="qrw"><span class="qlb">Chapitres</span>'+(st.chOpen?'':nsel.slice(0,6).map(function(x){return '<span class="qchip">'+x.s+'</span>'}).join('')+(nsel.length>6?'<span class="qchip">+'+(nsel.length-6)+'</span>':''))+'<button class="qb qs1" data-qt="chtog">'+(st.chOpen?'Terminer':'choisir ('+nsel.length+' sur '+chs.length+')')+'</button></div>';
+  if(st.chOpen)h+='<div class="qrw qch">'+chs.map(function(x){return '<button class="qb qs1" data-qt="ch" data-v="'+x.k+'" title="'+(x.l||'')+'" aria-pressed="'+(!!st.sel[x.k])+'">'+x.s+'</button>'}).join('')+'</div><div class="qrw"><button class="qb qs1" data-qt="chall">Tout cocher</button><button class="qb qs1" data-qt="chnone">Tout décocher</button><button class="qb qs1" data-qt="chcur">Chapitre en cours</button></div>';
+  var rb=rgBtns();if(rb.length)h+='<div class="qrw"><span class="qlb">Nombres</span>'+rb.map(function(b){var v=b.getAttribute('data-rg');return '<button class="qb qs1" data-qt="rg" data-v="'+v+'" aria-pressed="'+(b.getAttribute('aria-pressed')=='true')+'">'+(RGL[v]!==undefined?RGL[v]:v)+'</button>'}).join('')+'</div>';
+  h+='</div><div class="qrw qfoot"><button class="qb qs1" data-qt="close">Réviser les cartes</button><button class="qb qs1" data-qt="print">🖨️ Imprimer</button></div></div>'} else if(st.ph=='run'){var x=st.seq[st.i],ok=st.res.filter(function(r){return r}).length,ko=st.res.length-ok;
   h+='<div class="qr">'+(st.timed?'<span>⏱ <b id="qtt">'+fmt(st.end-Date.now())+'</b></span>':'')+'<span>Question <b>'+(st.i+1)+(st.inf?'':' / '+st.seq.length)+'</b></span><span>✓ '+ok+'</span><span>✗ '+ko+'</span></div>';
+  var mo=null;if(st.mc){if(st.opts[st.i]===undefined)st.opts[st.i]=mcOpts(x);mo=st.opts[st.i]}
   h+=cardHTML(x,st.flip);
-  h+=st.flip?'<div class="qr"><button class="qb ko" data-qt="ko">✗ Faux</button><button class="qb ok" data-qt="ok">✓ Juste</button></div>':'<div class="qr"><button class="qb pri" data-qt="flip">Voir la réponse</button></div>';
+  if(mo){var pk=st.opts[st.i+'p'];h+='<div class="qopts">'+mo.map(function(o,j){var k2=st.lock?(o.ok?' ok':(pk===j?' ko':'')):'';return '<button class="qb qo'+k2+'" data-qt="opt" data-v="'+j+'">'+esc(o.t)+'</button>'}).join('')+'</div>'}
+  else h+=st.flip?'<div class="qr"><button class="qb ko" data-qt="ko">✗ Faux</button><button class="qb ok" data-qt="ok">✓ Juste</button></div>':'<div class="qr"><button class="qb pri" data-qt="flip">Voir la réponse</button></div>';
   h+='<div class="qr"><button class="qb" data-qt="stop" style="font-size:16px;padding:4px 12px">Arrêter le test</button></div>'}
  else{var ok2=st.res.filter(function(r){return r}).length,n=st.res.length,ko2=n-ok2,pc=n?Math.round(100*ok2/n):0;
   var msg=pc==100?'Parfait ! 🎉':pc>=80?'Très bien ! 👏':pc>=50?'Bien, continue ! 💪':'On s’entraîne encore ! 🌱';
@@ -459,14 +488,14 @@ function answer(v){st.res[st.i]=v;if(st.i+1>=st.seq.length){if(st.inf){var p=get
 document.addEventListener('click',function(e){var t=e.target;if(t.id=='qtb'||(t.closest&&t.closest('#qtb'))){e.stopImmediatePropagation();e.preventDefault();if(!root())open();return}
  var q=t.closest&&t.closest('#qt [data-qt]');if(!q)return;e.stopPropagation();var a=q.getAttribute('data-qt');
  if(a=='close')close();else if(a=='n'){st.n=+q.getAttribute('data-v');draw()}else if(a=='ch'){var k=q.getAttribute('data-v');if(st.sel[k])delete st.sel[k];else st.sel[k]=1;draw()}else if(a=='chall'){CFG().chapters().forEach(function(x){st.sel[x.k]=1});draw()}else if(a=='chnone'){st.sel={};draw()}else if(a=='chcur'){st.sel={};st.sel[CFG().curKey]=1;draw()}
- else if(a=='go')go0();else if(a=='mode'){st.mode=q.getAttribute('data-v');draw()}else if(a=='qm'){st.n=Math.max(1,(st.n||11)-1);draw()}else if(a=='qp'){st.n=Math.min(200,(st.n||0)+1);draw()}else if(a=='mm'){st.min=Math.max(1,st.min-1);draw()}else if(a=='mp'){st.min=Math.min(60,st.min+1);draw()}else if(a=='flip'){st.flip=true;draw()}else if(a=='ok')answer(true);else if(a=='ko')answer(false);
+ else if(a=='tile'){st.mode=q.getAttribute('data-v');if(getPool().length)go0()}else if(a=='k'){st.k=+q.getAttribute('data-v');draw()}else if(a=='chtog'){st.chOpen=!st.chOpen;draw()}else if(a=='rg'){var rbn=document.querySelector('.rgb button[data-rg="'+q.getAttribute('data-v')+'"]');if(rbn)rbn.click();setTimeout(draw,30)}else if(a=='print'){close();var pb=document.getElementById('qpb');if(pb)pb.click()}else if(a=='opt'){if(st.lock||!st.mc)return;var mo2=st.opts[st.i];if(!mo2)return;var j2=+q.getAttribute('data-v'),okk=!!mo2[j2].ok,ii=st.i;st.lock=true;st.opts[ii+'p']=j2;st.res[ii]=okk;draw();setTimeout(function(){if(!root()||st.ph!='run'||st.i!==ii)return;st.lock=false;answer(okk)},okk?450:1100)}else if(a=='go')go0();else if(a=='mode'){st.mode=q.getAttribute('data-v');draw()}else if(a=='qm'){st.n=Math.max(1,(st.n||11)-1);draw()}else if(a=='qp'){st.n=Math.min(200,(st.n||0)+1);draw()}else if(a=='mm'){st.min=Math.max(1,st.min-1);draw()}else if(a=='mp'){st.min=Math.min(60,st.min+1);draw()}else if(a=='flip'){if(st.mc&&st.opts[st.i])return;st.flip=true;draw()}else if(a=='ok')answer(true);else if(a=='ko')answer(false);
  else if(a=='stop'){stopT();st.seq=st.seq.slice(0,Math.max(st.res.length,1));st.res=st.res.slice(0,st.seq.length);if(!st.res.length){st.ph='setup'}else st.ph='end';draw()}
- else if(a=='again'){var wasT=st.timed,wasI=st.inf;start(shuf(st.seq.length?st.seq:getPool()),wasI,wasT)}
- else if(a=='redo'){var m=st.seq.filter(function(x,i){return st.res[i]===false});start(shuf(m),false,false)}
- else if(a=='other'){var l2=pickOther();mark(l2);start(l2,st.mode=='speed'||!st.n,st.mode=='speed')}else if(a=='setup'){st.ph='setup';draw()}},true);
+ else if(a=='again'){var wasT=st.timed,wasI=st.inf,wasM=st.mc;start(shuf(st.seq.length?st.seq:getPool()),wasI,wasT,wasM)}
+ else if(a=='redo'){var m=st.seq.filter(function(x,i){return st.res[i]===false});start(shuf(m),false,false,st.mc)}
+ else if(a=='other'){var l2=pickOther();mark(l2);start(l2,st.mode=='speed'||!st.n,st.mode=='speed',st.mode=='speed')}else if(a=='setup'){st.ph='setup';draw()}},true);
 document.addEventListener('input',function(e){var t=e.target;if(!t||!root())return;if(t.id=='qtn'){var v=parseInt(t.value,10);if(v>0)st.n=Math.min(200,v)}else if(t.id=='qtm'){var m=parseInt(t.value,10);if(m>0)st.min=Math.min(60,m)}},true);
 document.addEventListener('change',function(e){var t=e.target;if(t&&(t.id=='qtn'||t.id=='qtm')&&root())draw()},true);
-document.addEventListener('keydown',function(e){if(!root())return;if(e.target&&e.target.tagName=='INPUT'&&e.key!=='Escape')return;if(e.key==='Escape'){e.stopPropagation();close()}else if(st.ph=='run'&&(e.key===' '||e.key==='Enter')&&e.target.tagName!='BUTTON'){e.preventDefault();if(!st.flip){st.flip=true;draw()}}},true);
+document.addEventListener('keydown',function(e){if(!root())return;if(e.target&&e.target.tagName=='INPUT'&&e.key!=='Escape')return;if(e.key==='Escape'){e.stopPropagation();close()}else if(st.ph=='run'&&st.mc&&st.opts[st.i]&&/^[1-4]$/.test(e.key)){var ob=root().querySelectorAll('[data-qt=opt]')[+e.key-1];if(ob)ob.click()}else if(st.ph=='run'&&!(st.mc&&st.opts[st.i])&&(e.key===' '||e.key==='Enter')&&e.target.tagName!='BUTTON'){e.preventDefault();if(!st.flip){st.flip=true;draw()}}},true);
 })();</script><style id="prcss">
 #pr{position:fixed;inset:0;z-index:9500;background:var(--bg,#fff);color:var(--fg,#111);overflow:auto;padding:max(12px,env(safe-area-inset-top,0px)) 14px 18px;display:flex;flex-direction:column;align-items:center;gap:14px;font-family:inherit}
 #pr .qh{width:min(100%,900px);display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}#pr .qh b{font-size:clamp(20px,3vw,30px);color:var(--qa)}
